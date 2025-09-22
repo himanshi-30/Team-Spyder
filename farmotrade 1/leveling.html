@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Farmer Level System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #fdfbfb, #ebedee);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #fff;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      width: 420px;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      color: #2e5a2c;
+    }
+
+    .level-track {
+      display: flex;
+      justify-content: space-between;
+      margin: 25px 0;
+      position: relative;
+    }
+
+    .level-track::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 10%;
+      right: 10%;
+      height: 6px;
+      background: #ddd;
+      transform: translateY(-50%);
+      border-radius: 3px;
+      z-index: 0;
+    }
+
+    .level {
+      position: relative;
+      z-index: 1;
+      font-size: 1.8rem;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+
+    .level.active {
+      transform: scale(1.4);
+      opacity: 1;
+    }
+
+    .labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      margin-top: 5px;
+      color: #444;
+    }
+
+    textarea {
+      width: 100%;
+      border-radius: 12px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+      font-size: 0.95rem;
+      resize: none;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px 20px;
+      background: #2e5a2c;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #1e3d20;
+      transform: translateY(-2px);
+    }
+
+    .avg-level {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .reviews {
+      margin-top: 20px;
+      text-align: left;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .review-card {
+      background: #f9f9f9;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-size: 0.9rem;
+    }
+
+    .review-card strong {
+      color: #2e5a2c;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>✅ Verified Farmer Leveling</h2>
+
+    <div class="level-track">
+      <span class="level" data-value="1">🌱</span>
+      <span class="level" data-value="2">🌾</span>
+      <span class="level" data-value="3">🚜</span>
+      <span class="level" data-value="4">🏆</span>
+      <span class="level" data-value="5">👑</span>
+    </div>
+    <div class="labels">
+      <span>Beginner</span>
+      <span>Growing</span>
+      <span>Experienced</span>
+      <span>Expert</span>
+      <span>Master</span>
+    </div>
+
+    <textarea id="feedback" rows="3" placeholder="Write your feedback (optional)..."></textarea>
+    <button id="submitBtn">Submit</button>
+
+    <div class="avg-level" id="avgLevel">🌟 Average Level: 0 (0 verified farmers)</div>
+
+    <div class="reviews" id="reviews"></div>
+  </div>
+
+  <script>
+    const levels = document.querySelectorAll(".level");
+    const feedbackInput = document.getElementById("feedback");
+    const submitBtn = document.getElementById("submitBtn");
+    const avgLevelDiv = document.getElementById("avgLevel");
+    const reviewsDiv = document.getElementById("reviews");
+
+    let selectedLevel = 0;
+    let allRatings = [];
+
+    levels.forEach((lvl) => {
+      lvl.addEventListener("click", () => {
+        selectedLevel = parseInt(lvl.dataset.value);
+        updateLevels(selectedLevel);
+      });
+    });
+
+    function updateLevels(level) {
+      levels.forEach((lvl, i) => {
+        if (i < level) {
+          lvl.classList.add("active");
+        } else {
+          lvl.classList.remove("active");
+        }
+      });
+    }
+
+    submitBtn.addEventListener("click", () => {
+      if (selectedLevel === 0) {
+        alert("Please select a level before submitting.");
+        return;
+      }
+
+      const feedback = feedbackInput.value.trim();
+      allRatings.push({ level: selectedLevel, feedback });
+      updateAverage();
+      showReviews();
+
+      feedbackInput.value = "";
+      selectedLevel = 0;
+      updateLevels(0);
+    });
+
+    function updateAverage() {
+      let sum = allRatings.reduce((acc, r) => acc + r.level, 0);
+      let avg = (sum / allRatings.length).toFixed(1);
+      // --- ERROR 1 CORRECTED ---
+      // Changed single quotes ' ' to backticks ` `
+      avgLevelDiv.textContent = `🌟 Average Level: ${avg} (${allRatings.length} verified farmers)`;
+    }
+
+    function showReviews() {
+      reviewsDiv.innerHTML = "";
+      allRatings.slice().reverse().forEach((r) => {
+        const div = document.createElement("div");
+        div.classList.add("review-card");
+        const levelsMap = ["🌱 Beginner", "🌾 Growing", "🚜 Experienced", "🏆 Expert", "👑 Master"];
+        // --- ERROR 2 CORRECTED ---
+        // Changed double quotes " " to backticks ` `
+        div.innerHTML = `<strong>${levelsMap[r.level - 1]}</strong><br>${r.feedback || "(No feedback)"}`;
+        reviewsDiv.appendChild(div);
+      });
+    }
+  </script>
+</body>
+</html>

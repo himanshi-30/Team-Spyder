@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>FarmoTrade · GreenFarm AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --card:#fff; --accent:#229A64; --accent-dark:#176844; --muted:#6c757d;
+    --shadow: 0 10px 30px rgba(20, 40, 30, 0.07);
+    --border-color: #e9f3ee;
+  }
+  body{
+    margin:0; font-family:'Poppins', system-ui, Arial, sans-serif;
+    /* --- UPDATED BACKGROUND --- */
+    background: linear-gradient(135deg, #e6f7f1 0%, #f5fcf9 100%);
+    color:#173d2f; padding:20px; display:flex; justify-content:center;
+    min-height: 100vh;
+  }
+  .wrap{ width:100%; max-width:1100px; }
+  header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:20px; }
+  .header-left { display:flex; align-items:center; gap:15px; }
+  .logo{
+    width:54px; height:54px; border-radius:12px; background:var(--accent);
+    display:flex; align-items:center; justify-content:center; color:white; font-weight:700; font-size: 20px;
+    box-shadow:0 6px 18px rgba(31,138,89,0.2);
+  }
+  h1{ margin:0; font-size:22px; }
+  .lead{ margin:0; font-size: 14px; color:var(--muted) }
+
+  .grid{ display:grid; grid-template-columns: 1fr 420px; gap:20px; }
+  .card{
+    background:var(--card); border-radius:16px; padding:24px; box-shadow:var(--shadow);
+    border:1px solid var(--border-color);
+  }
+  .card h3 { margin-top:0; color: var(--accent-dark); }
+  
+  label{ font-size:14px; color:#0f3b2e; display:block; margin-bottom:8px; font-weight:600; }
+  input[type="number"], select, textarea{
+    width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--border-color); font-size:15px;
+    box-sizing:border-box; background-color: #fcfdfd; transition: border-color 0.2s;
+  }
+  input:focus, select:focus { border-color: var(--accent); outline:none; }
+
+  .row{ margin-bottom:16px; }
+  .btn{ background:var(--accent); color:white; padding:12px 18px; border-radius:10px; border:0; cursor:pointer; font-weight:600; font-size:15px; transition: background-color 0.2s; }
+  .btn:hover { background:var(--accent-dark); }
+  .btn.secondary{ background:#e9f3ee; color: var(--accent-dark); }
+  .btn.secondary:hover { background: #dbebe2; }
+
+  .resultBig{ font-size:28px; font-weight:700; color:var(--accent-dark); }
+  .points{ font-weight:700; color:var(--accent); font-size: 24px;}
+  .suggestion{ background:#f8fefc; border: 1px solid var(--border-color); border-radius:12px; padding:12px; margin-top:12px; }
+  
+  .market .product{ 
+    display:flex; align-items:center; gap:15px; padding:12px; border-radius:12px;
+    background:#fdfefe; margin-bottom:12px; border:1px solid var(--border-color);
+  }
+  .product img { width: 70px; height: 70px; border-radius: 10px; object-fit: cover; }
+  .product .btn { padding: 8px 12px; font-size: 14px; }
+  .product-info { flex-grow: 1; }
+
+  #langToggle { font-weight: 600; padding: 8px 16px; border-radius: 8px; cursor: pointer; background: #fff; border: 1px solid var(--border-color); color: var(--accent-dark); }
+
+  /* Chart Styles */
+  .chart { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-color); }
+  .chart-bar { display: flex; align-items: center; margin-bottom: 12px; font-size: 14px; }
+  .chart-label { width: 120px; padding-right: 10px; white-space: nowrap; }
+  .chart-progress { flex-grow: 1; background-color: #e9f3ee; border-radius: 6px; height: 24px; overflow: hidden; }
+  .chart-progress-fill {
+    background-color: var(--accent); height: 100%; width: var(--width, 0%);
+    transition: width 0.8s ease-in-out; text-align: right; padding-right: 8px;
+    color: white; font-weight: 600; font-size: 13px; line-height: 24px;
+  }
+
+  @media(max-width:980px){ .grid{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="header-left">
+        <div class="logo">FT</div>
+        <div>
+          <h1 data-lang-key="title">FarmoTrade · GreenFarm AI</h1>
+          <p class="lead" data-lang-key="subtitle">Carbon Smart Advisor for Farmers</p>
+        </div>
+      </div>
+      <button id="langToggle" onclick="toggleLanguage()">हिंदी</button>
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <h3 data-lang-key="formTitle">Calculate Your Farm's Emissions</h3>
+        <div class="row">
+          <label for="crop" data-lang-key="cropLabel">Crop</label>
+          <select id="crop">
+            <option value="wheat" data-lang-key="cropWheat">Wheat</option>
+            <option value="rice" data-lang-key="cropRice">Rice</option>
+            <option value="maize" data-lang-key="cropMaize">Maize</option>
+            <option value="vegetables" data-lang-key="cropVegetables">Vegetables</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="diesel" data-lang-key="dieselLabel">Diesel Used (Liters/Month)</label>
+          <input id="diesel" type="number" min="0" step="0.1" value="10" />
+        </div>
+        <div class="row">
+          <label for="fert" data-lang-key="fertLabel">Fertilizer Used (kg/Month)</label>
+          <input id="fert" type="number" min="0" step="0.1" value="20" />
+        </div>
+        <div class="row">
+          <label for="irrig" data-lang-key="irrigLabel">Irrigation Type</label>
+          <select id="irrig">
+            <option value="flood" data-lang-key="irrigFlood">Flood / Surface</option>
+            <option value="sprinkler" data-lang-key="irrigSprinkler">Sprinkler</option>
+            <option value="drip" data-lang-key="irrigDrip">Drip</option>
+            <option value="solar_pump" data-lang-key="irrigSolar">Solar Pump</option>
+          </select>
+        </div>
+        <div class="row">
+          <label for="water_hours" data-lang-key="pumpLabel">Pump Hours per Month</label>
+          <input id="water_hours" type="number" min="0" step="0.1" value="30" />
+        </div>
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <button class="btn" id="calcBtn" data-lang-key="calcButton">Calculate Emissions</button>
+          <button class="btn secondary" id="resetBtn" data-lang-key="resetButton">Reset</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 data-lang-key="resultsTitle">Results & Suggestions</h3>
+        <div id="resultsArea">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+              <div class="resultBig" id="totalCO2">— kg CO₂</div>
+              <div style="color:var(--muted); font-size:13px" data-lang-key="monthlyEmissions">/ month</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px" data-lang-key="yourPoints">Your Green Points</div>
+              <div class="points" id="greenPoints">0 pts</div>
+            </div>
+          </div>
+          <div class="chart">
+              <div class="chart-bar"><div class="chart-label">⛽ <span data-lang-key="breakdownDiesel">Diesel</span></div><div class="chart-progress"><div id="dieselBar" class="chart-progress-fill"></div></div></div>
+              <div class="chart-bar"><div class="chart-label">🌱 <span data-lang-key="breakdownFert">Fertilizer</span></div><div class="chart-progress"><div id="fertBar" class="chart-progress-fill"></div></div></div>
+              <div class="chart-bar"><div class="chart-label">💧 <span data-lang-key="breakdownPump">Pumping</span></div><div class="chart-progress"><div id="pumpBar" class="chart-progress-fill"></div></div></div>
+          </div>
+        </div>
+        <hr style="margin:24px 0; border:none; border-top:1px solid var(--border-color)" />
+        <div class="market">
+          <h4 style="margin-top:0;" data-lang-key="marketTitle">Marketplace</h4>
+          
+          <div class="product">
+            <img src="https://i.pinimg.com/736x/3a/ca/8c/3aca8cd31aa2b8d4c4d43d9287c3df30.jpg" alt="A bag of organic bio-fertilizer">
+            <div class="product-info">
+              <strong data-lang-key="prod1Title">Bio-fertilizer (5kg)</strong><br/>
+              <small data-lang-key="prod1Desc">Reduce chemical usage</small>
+            </div>
+            <button class="btn" onclick="redeem(300)" data-lang-key="redeemButton">Redeem for 300 pts</button>
+          </div>
+          
+          <div class="product">
+            <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDF8fGRyaXAlMjBvcnJpZ2F0aW9ufGVufDB8fHx8MTY2NjAyMzM4Nw&ixlib=rb-4.0.3&q=80&w=400" alt="Drip irrigation system in a field">
+            <div class="product-info">
+              <strong data-lang-key="prod2Title">Drip Irrigation Kit</strong><br/>
+              <small data-lang-key="prod2Desc">Save water and energy</small>
+            </div>
+            <button class="btn" onclick="redeem(700)" data-lang-key="redeemButton">Redeem for 700 pts</button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// --- LANGUAGE MANAGEMENT ---
+let currentLang = 'en';
+const LANG_STRINGS = {
+  en: {
+    title: "FarmoTrade · GreenFarm AI",
+    subtitle: "Carbon Smart Advisor for Farmers",
+    formTitle: "Calculate Your Farm's Emissions",
+    cropLabel: "Crop", cropWheat: "Wheat", cropRice: "Rice", cropMaize: "Maize", cropVegetables: "Vegetables",
+    dieselLabel: "Diesel Used (Liters/Month)",
+    fertLabel: "Fertilizer Used (kg/Month)",
+    irrigLabel: "Irrigation Type", irrigFlood: "Flood / Surface", irrigSprinkler: "Sprinkler", irrigDrip: "Drip", irrigSolar: "Solar Pump",
+    pumpLabel: "Pump Hours per Month",
+    calcButton: "Calculate Emissions",
+    resetButton: "Reset",
+    resultsTitle: "Results & Suggestions",
+    monthlyEmissions: "/ month",
+    yourPoints: "Your Green Points",
+    breakdownDiesel: "Diesel", breakdownFert: "Fertilizer", breakdownPump: "Pumping",
+    marketTitle: "Marketplace",
+    prod1Title: "Bio-fertilizer (5kg)", prod1Desc: "Reduce chemical usage",
+    prod2Title: "Drip Irrigation Kit", prod2Desc: "Save water and energy",
+    redeemButton: "Redeem",
+    alertRedeemed: (points) => `Redeemed for ${points} points! (This is a demo)`,
+    alertNoPoints: "Not enough points.",
+  },
+  hi: {
+    title: "फार्मोट्रेड · ग्रीनफार्म एआई",
+    subtitle: "किसानों के लिए कार्बन स्मार्ट सलाहकार",
+    formTitle: "अपने खेत के उत्सर्जन की गणना करें",
+    cropLabel: "फ़सल", cropWheat: "गेहूँ", cropRice: "चावल", cropMaize: "मक्का", cropVegetables: "सब्जियाँ",
+    dieselLabel: "डीजल की खपत (लीटर/महीना)",
+    fertLabel: "उर्वरक का उपयोग (किग्रा/महीना)",
+    irrigLabel: "सिंचाई का प्रकार", irrigFlood: "बाढ़ / सतही", irrigSprinkler: "स्प्रिंकलर", irrigDrip: "ड्रिप", irrigSolar: "सौर पंप",
+    pumpLabel: "पंप चलने के घंटे प्रति माह",
+    calcButton: "उत्सर्जन की गणना करें",
+    resetButton: "रीसेट",
+    resultsTitle: "परिणाम और सुझाव",
+    monthlyEmissions: "/ महीना",
+    yourPoints: "आपके ग्रीन पॉइंट्स",
+    breakdownDiesel: "डीजल", breakdownFert: "उर्वरक", breakdownPump: "पंपिंग",
+    marketTitle: "मार्केटप्लेस",
+    prod1Title: "जैव-उर्वरक (5 किग्रा)", prod1Desc: "रासायनिक उपयोग कम करें",
+    prod2Title: "ड्रिप सिंचाई किट", prod2Desc: "पानी और ऊर्जा बचाएं",
+    redeemButton: "रिडीम करें",
+    alertRedeemed: (points) => `${points} अंकों के लिए रिडीम किया गया! (यह एक डेमो है)`,
+    alertNoPoints: "पर्याप्त अंक नहीं हैं।",
+  }
+};
+
+function setLanguage(lang) {
+  currentLang = lang;
+  document.querySelectorAll('[data-lang-key]').forEach(el => {
+    const key = el.dataset.langKey;
+    if (LANG_STRINGS[lang][key]) {
+      el.textContent = LANG_STRINGS[lang][key];
+    }
+  });
+  document.querySelector('button[onclick="redeem(300)"]').textContent = `${LANG_STRINGS[lang].redeemButton} for 300 pts`;
+  document.querySelector('button[onclick="redeem(700)"]').textContent = `${LANG_STRINGS[lang].redeemButton} for 700 pts`;
+  $('langToggle').textContent = lang === 'en' ? 'हिंदी' : 'English';
+}
+
+function toggleLanguage() {
+  const newLang = currentLang === 'en' ? 'hi' : 'en';
+  setLanguage(newLang);
+}
+
+// --- CORE APPLICATION LOGIC ---
+const FACTORS = {
+  diesel_per_liter: 2.68,
+  fertilizer_per_kg: 1.5,
+  pump_per_hour_elec_kwh: 1.2,
+  electricity_kgCO2_per_kwh: 0.7,
+};
+
+let state = { points: 0 };
+
+function $(id){ return document.getElementById(id); }
+
+function gatherInputs(){
+  return {
+    diesel: parseFloat($('diesel').value) || 0,
+    fert: parseFloat($('fert').value) || 0,
+    irrig: $('irrig').value,
+    water_hours: parseFloat($('water_hours').value) || 0,
+  };
+}
+
+function computeEmissions(inputs){
+  const dieselCO2 = inputs.diesel * FACTORS.diesel_per_liter;
+  const fertCO2 = inputs.fert * FACTORS.fertilizer_per_kg;
+  const pumpKwh = inputs.water_hours * FACTORS.pump_per_hour_elec_kwh;
+  const pumpCO2 = inputs.irrig === 'solar_pump' ? 0 : pumpKwh * FACTORS.electricity_kgCO2_per_kwh;
+  const total = dieselCO2 + fertCO2 + pumpCO2;
+  return { dieselCO2, fertCO2, pumpCO2, total };
+}
+
+function renderResults(res) {
+    const { dieselCO2, fertCO2, pumpCO2, total } = res;
+    
+    $('totalCO2').textContent = total.toFixed(1) + ' kg CO₂';
+    
+    const dieselPercent = total > 0 ? (dieselCO2 / total) * 100 : 0;
+    const fertPercent = total > 0 ? (fertCO2 / total) * 100 : 0;
+    const pumpPercent = total > 0 ? (pumpCO2 / total) * 100 : 0;
+    
+    updateBar('dieselBar', dieselPercent, `${dieselCO2.toFixed(1)} kg`);
+    updateBar('fertBar', fertPercent, `${fertCO2.toFixed(1)} kg`);
+    updateBar('pumpBar', pumpPercent, `${pumpCO2.toFixed(1)} kg`);
+    
+    let pointsAwarded = Math.max(0, 150 - Math.round(total / 2));
+    state.points += pointsAwarded;
+    updatePointsUI();
+}
+
+function updateBar(barId, percentage, text) {
+    const bar = $(barId);
+    bar.style.width = `${percentage}%`;
+    bar.textContent = text;
+}
+
+function updatePointsUI(){
+  $('greenPoints').textContent = `${state.points} pts`;
+}
+
+function redeem(pointsNeeded) {
+  if (state.points >= pointsNeeded) {
+    state.points -= pointsNeeded;
+    updatePointsUI();
+    alert(LANG_STRINGS[currentLang].alertRedeemed(pointsNeeded));
+  } else {
+    alert(LANG_STRINGS[currentLang].alertNoPoints);
+  }
+}
+
+// --- EVENT LISTENERS ---
+$('calcBtn').addEventListener('click', () => {
+  const inputs = gatherInputs();
+  const results = computeEmissions(inputs);
+  renderResults(results);
+});
+
+$('resetBtn').addEventListener('click', () => {
+  $('diesel').value = 10;
+  $('fert').value = 20;
+  $('irrig').value = 'flood';
+  $('water_hours').value = 30;
+  $('totalCO2').textContent = '— kg CO₂';
+  updateBar('dieselBar', 0, '');
+  updateBar('fertBar', 0, '');
+  updateBar('pumpBar', 0, '');
+});
+
+// Initial load
+document.addEventListener('DOMContentLoaded', () => {
+    setLanguage('en');
+});
+
+</script>
+</body>
+</html>

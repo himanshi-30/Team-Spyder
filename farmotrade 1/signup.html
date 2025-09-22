@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Farmotrade - Sign Up</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+        url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1500&q=80') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .signup-container {
+      background: rgba(255,255,255,0.97);
+      padding: 2.5rem 2rem 2rem 2rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .signup-container img {
+      width: 80px;
+      margin-bottom: 1rem;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+
+    .signup-container h2 {
+      margin-bottom: 1.2rem;
+      color: #333;
+    }
+
+    .signup-container input[type="text"],
+    .signup-container input[type="email"],
+    .signup-container input[type="password"] {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      background: #f7f7f7;
+      box-sizing: border-box;
+      transition: border 0.2s;
+    }
+
+    .signup-container input[type="text"]:focus,
+    .signup-container input[type="email"]:focus,
+    .signup-container input[type="password"]:focus {
+      border: 1.5px solid #4CAF50;
+      outline: none;
+      background: #fff;
+    }
+
+    .signup-container label {
+      display: block;
+      text-align: left;
+      margin-bottom: 0.3rem;
+      font-size: 0.99rem;
+      color: #222;
+      font-weight: 500;
+    }
+
+    .signup-container .terms {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      font-size: 0.97rem;
+      text-align: left;
+    }
+
+    .signup-container .terms input[type="checkbox"] {
+      margin-right: 0.6em;
+      accent-color: #4CAF50;
+    }
+
+    .signup-container button {
+      width: 100%;
+      padding: 0.75rem;
+      background: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .signup-container button:hover {
+      background: #45a049;
+    }
+
+    .error-message {
+      color: #d8000c;
+      background: #ffd2d2;
+      border-radius: 4px;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      display: none;
+      font-size: 0.95rem;
+    }
+    
+    .success-message {
+      color: #4F8A10;
+      background: #DFF2BF;
+      border-radius: 4px;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      display: none;
+      font-size: 0.95rem;
+    }
+    
+    .login-link {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    
+    .login-link a {
+      color: #4CAF50;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <h2>Join Farmotrade Network</h2>
+    
+    <div class="error-message" id="error-message"></div>
+    <div class="success-message" id="success-message"></div>
+    
+    <form id="signup-form" autocomplete="off">
+      <label for="fullname">Full Name</label>
+      <input type="text" id="fullname" name="fullname" placeholder="Enter your full name" required>
+
+      <label for="phone">Phone Number</label>
+      <input type="text" id="phone" name="phone" placeholder="Enter your phone number" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+
+      <label for="aadhar">Aadhar Number</label>
+      <input type="text" id="aadhar" name="aadhar" placeholder="Enter your 12-digit Aadhar number" required>
+
+      <label for="location">Location</label>
+      <input type="text" id="location" name="location" placeholder="Enter your location" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Create a password (min. 6 characters)" required>
+
+      <label for="confirm-password">Confirm Password</label>
+      <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
+
+      <div class="terms">
+        <input type="checkbox" id="terms" name="terms" required>
+        <label for="terms" style="margin: 0;">I agree to the <a href="#" style="color:#4CAF50;text-decoration:underline;">Terms and Conditions</a></label>
+      </div>
+
+      <button type="submit">Create Account</button>
+    </form>
+    
+    <div class="login-link">
+      Already have an account? <a href="#">Login here</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('signup-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // Get form values
+      const fullname = document.getElementById('fullname').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const aadhar = document.getElementById('aadhar').value.trim();
+      const location = document.getElementById('location').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const terms = document.getElementById('terms').checked;
+      
+      // Get message elements
+      const errorMessage = document.getElementById('error-message');
+      const successMessage = document.getElementById('success-message');
+      
+      // Reset messages
+      errorMessage.style.display = "none";
+      successMessage.style.display = "none";
+
+      // Client-side validation
+      if (!fullname || !phone || !email || !aadhar || !location || !password || !confirmPassword) {
+        errorMessage.textContent = "Please fill in all fields.";
+        errorMessage.style.display = "block";
+        return;
+      }
+      
+      if (!/^\d{10,12}$/.test(phone)) {
+        errorMessage.textContent = "Please enter a valid phone number (10-12 digits).";
+        errorMessage.style.display = "block";
+        return;
+      }
+      
+      if (!/^\d{12}$/.test(aadhar)) {
+        errorMessage.textContent = "Please enter a valid 12-digit Aadhar number.";
+        errorMessage.style.display = "block";
+        return;
+      }
+      
+      if (password.length < 6) {
+        errorMessage.textContent = "Password must be at least 6 characters.";
+        errorMessage.style.display = "block";
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        errorMessage.textContent = "Passwords do not match.";
+        errorMessage.style.display = "block";
+        return;
+      }
+      
+      if (!terms) {
+        errorMessage.textContent = "You must agree to the Terms and Conditions.";
+        errorMessage.style.display = "block";
+        return;
+      }
+
+      // Send the data to the backend
+      try {
+        const response = await fetch('http://127.0.0.1:5000/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            fullname,
+            phone,
+            email,
+            aadhar,
+            location,
+            password
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Show karega that form is successfull submitted
+          successMessage.textContent = data.message || "Registration successful!";
+          successMessage.style.display = "block";
+          
+          // Reset kar dega form ko
+          document.getElementById('signup-form').reset();
+        } else {
+          // Show karega error message
+          errorMessage.textContent = data.message || "Registration failed. Please try again.";
+          errorMessage.style.display = "block";
+        }
+      } catch (error) {
+        errorMessage.textContent = "Network error: Could not connect to the server.";
+        errorMessage.style.display = "block";
+        console.error("Signup failed:", error);
+      }
+    });
+  </script>
+</body>
+</html>

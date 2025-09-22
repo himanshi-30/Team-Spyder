@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FarmoTrade - Smart Kisan Chatbot</title>
+
+  <!-- Google Fonts + Icons -->
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400&family=Poppins:wght@400;500;600&display=swap" />
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
+
+    body{
+      height:100vh;
+      display:flex;justify-content:center;align-items:center;
+      background:linear-gradient(135deg,#d4f5d0,#b9f0b1,#a2e69c,#8cd889);
+      background-size:400% 400%;
+      animation:gradientBG 10s ease infinite;
+    }
+    @keyframes gradientBG{
+      0%{background-position:0% 50%}
+      50%{background-position:100% 50%}
+      100%{background-position:0% 50%}
+    }
+
+    /* Chatbot Container */
+    .chatbot{
+      width:430px;max-width:95%;height:620px;
+      background:#fff;border-radius:20px;
+      box-shadow:0 15px 35px rgba(0,0,0,0.2);
+      display:flex;flex-direction:column;overflow:hidden;
+      transform:scale(0.8);opacity:0;pointer-events:none;
+      transition:all 0.3s ease;
+    }
+    body.show-chatbot .chatbot{transform:scale(1);opacity:1;pointer-events:auto;}
+
+    /* Header */
+    .chatbot header{
+      padding:15px;text-align:center;color:#fff;
+      background:linear-gradient(135deg,#4caf50,#2e7d32);
+      font-weight:600;font-size:1.2rem;position:relative;
+      letter-spacing:0.5px;
+    }
+    .chatbot header .close-btn{
+      position:absolute;right:15px;top:12px;cursor:pointer;font-size:24px;
+    }
+    .lang-toggle{
+      position:absolute;left:15px;top:12px;
+      background:#fff;color:#2e7d32;border:none;
+      border-radius:8px;padding:4px 10px;font-size:0.8rem;cursor:pointer;
+      font-weight:600;box-shadow:0 2px 6px rgba(0,0,0,0.15);
+      transition:0.3s;
+    }
+    .lang-toggle:hover{background:#f1f1f1;}
+
+    /* Chatbox */
+    .chatbox{flex:1;overflow-y:auto;padding:20px;background:#f7fdf7;}
+    .chatbox::-webkit-scrollbar{width:6px;}
+    .chatbox::-webkit-scrollbar-thumb{background:#a5d6a7;border-radius:25px;}
+
+    .chat{display:flex;margin:12px 0;}
+    .chat.incoming{align-items:flex-start;}
+    .chat.outgoing{justify-content:flex-end;}
+
+    .bot-icon{
+      width:36px;height:36px;margin-right:10px;
+      background:linear-gradient(135deg,#66bb6a,#43a047);
+      border-radius:50%;display:flex;align-items:center;justify-content:center;
+      color:#fff;font-size:18px;
+    }
+
+    .chat p{
+      padding:12px 16px;border-radius:12px;max-width:75%;
+      font-size:0.95rem;line-height:1.4;
+    }
+    .chat.incoming p{background:#fff;border:1px solid #c8e6c9;}
+    .chat.outgoing p{background:#4caf50;color:#fff;border-radius:12px 12px 0 12px;}
+
+    /* Suggestions */
+    .suggestions{
+      display:flex;flex-wrap:wrap;gap:8px;
+      padding:10px;background:#edf9ed;border-top:1px solid #c8e6c9;
+    }
+    .suggestions button{
+      flex:1;min-width:48%;padding:8px;
+      border:none;border-radius:8px;cursor:pointer;
+      background:#43a047;color:#fff;font-size:0.85rem;font-weight:500;
+      transition:0.3s;
+    }
+    .suggestions button:hover{background:#2e7d32;}
+
+    /* Input */
+    .chat-input{
+      display:flex;gap:10px;padding:12px;
+      background:#fff;border-top:1px solid #c8e6c9;
+    }
+    .chat-input textarea{
+      flex:1;resize:none;border:none;outline:none;
+      background:#f1f8f1;border-radius:10px;
+      padding:10px;font-size:0.95rem;max-height:120px;
+    }
+    .chat-input span{
+      cursor:pointer;font-size:24px;color:#2e7d32;
+      display:flex;align-items:center;justify-content:center;
+      transition:transform 0.2s;
+    }
+    .chat-input span:hover{transform:scale(1.2);}
+
+    /* Toggle Button */
+    .chatbot-toggler{
+      position:fixed;bottom:30px;right:35px;width:65px;height:65px;
+      border-radius:50%;border:none;
+      background:#43a047;color:#fff;font-size:30px;
+      cursor:pointer;box-shadow:0 6px 15px rgba(0,0,0,0.25);
+      z-index:9999;animation:pulse 2s infinite;
+    }
+    @keyframes pulse{
+      0%{box-shadow:0 0 0 0 rgba(76,175,80,0.6);}
+      70%{box-shadow:0 0 0 20px rgba(76,175,80,0);}
+      100%{box-shadow:0 0 0 0 rgba(76,175,80,0);}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toggle Button -->
+  <button class="chatbot-toggler material-symbols-outlined">chat</button>
+
+  <!-- Chatbot -->
+  <div class="chatbot">
+    <header>
+      🌾 FarmoTrade सहायक
+      <button class="lang-toggle">EN</button>
+      <span class="close-btn material-symbols-outlined">close</span>
+    </header>
+
+    <ul class="chatbox">
+      <li class="chat incoming">
+        <span class="bot-icon">🤖</span>
+        <p id="welcome-msg">नमस्ते किसान भाई! 👨‍🌾  
+मैं आपका खेती सहायक हूँ।  
+आप मुझसे फसल, खाद, रोग और मौसम के बारे में पूछ सकते हैं।</p>
+      </li>
+    </ul>
+
+    <!-- Suggestions -->
+    <div class="suggestions" id="suggestions">
+      <button>🌾 गेहूं</button>
+      <button>🌾 धान</button>
+      <button>🧪 खाद</button>
+      <button>🌤️ मौसम</button>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input">
+      <textarea placeholder="अपना सवाल यहाँ लिखें... (Type your question)"></textarea>
+      <span id="send-btn" class="material-symbols-outlined">send</span>
+    </div>
+  </div>
+
+  <script>
+    const chatbotToggler=document.querySelector(".chatbot-toggler"),
+          chatbot=document.querySelector(".chatbot"),
+          closeBtn=document.querySelector(".close-btn"),
+          chatbox=document.querySelector(".chatbox"),
+          chatInput=document.querySelector(".chat-input textarea"),
+          sendBtn=document.getElementById("send-btn"),
+          langToggle=document.querySelector(".lang-toggle"),
+          welcomeMsg=document.getElementById("welcome-msg"),
+          suggestions=document.getElementById("suggestions");
+
+    let userMessage="", currentLang="hi";
+
+    const messages={
+      hi:{
+        welcome:"नमस्ते किसान भाई! 👨‍🌾\nमैं आपका खेती सहायक हूँ।\nआप मुझसे फसल, खाद, रोग और मौसम के बारे में पूछ सकते हैं।",
+        default:"🤔 मैं आपकी खेती में मदद कर सकता हूँ - फसल, खाद, रोग और मौसम।",
+        wheat:"🌾 गेहूं ठंडे मौसम (10-25°C) में उगता है और 4-5 महीने में कटाई होती है।",
+        rice:"🌾 धान को गर्म मौसम और पानी भरे खेत चाहिए। यह 4-6 महीने में तैयार होती है।",
+        fertilizer:"🧪 खाद: यूरिया, डीएपी, एमओपी और गोबर की खाद का प्रयोग करें।",
+        weather:"🌤️ सूखा में ड्रिप सिंचाई करें, पाला से बचाव के लिए फसलों को ढकें।"
+      },
+      en:{
+        welcome:"Hello Farmer! 👨‍🌾\nI am your farming assistant.\nYou can ask me about crops, fertilizer, diseases, and weather.",
+        default:"🤔 I can help you with crops, fertilizer, diseases, and weather.",
+        wheat:"🌾 Wheat grows in cool weather (10-25°C) and is harvested in 4-5 months.",
+        rice:"🌾 Rice requires warm climate and flooded fields. It matures in 4-6 months.",
+        fertilizer:"🧪 Fertilizers: Use Urea (N), DAP (P), MOP (K), and organic manure.",
+        weather:"🌤️ Use drip irrigation in drought, and cover crops to protect from frost."
+      }
+    };
+
+    chatbotToggler.onclick=()=>document.body.classList.add("show-chatbot");
+    closeBtn.onclick=()=>document.body.classList.remove("show-chatbot");
+
+    langToggle.onclick=()=>{
+      currentLang=currentLang==="hi"?"en":"hi";
+      langToggle.textContent=currentLang==="hi"?"EN":"हिन्दी";
+      welcomeMsg.textContent=messages[currentLang].welcome;
+      chatbox.scrollTop=chatbox.scrollHeight;
+      updateSuggestions();
+    };
+
+    function updateSuggestions(){
+      const opts=currentLang==="hi"?["🌾 गेहूं","🌾 धान","🧪 खाद","🌤️ मौसम"]:
+                                   ["🌾 Wheat","🌾 Rice","🧪 Fertilizer","🌤️ Weather"];
+      suggestions.innerHTML="";
+      opts.forEach(opt=>{
+        const btn=document.createElement("button");
+        btn.textContent=opt;
+        btn.onclick=()=>handleChat(opt);
+        suggestions.appendChild(btn);
+      });
+    }
+    updateSuggestions();
+
+    function createChatLi(message,className){
+      const li=document.createElement("li");
+      li.classList.add("chat",className);
+      li.innerHTML=className==="outgoing"?`<p>${message}</p>`:
+        `<span class="bot-icon">🤖</span><p>${message}</p>`;
+      return li;
+    }
+
+    function generateResponse(msg){
+      msg=msg.toLowerCase();
+      let r=messages[currentLang].default;
+      if(msg.includes("गेहूं")||msg.includes("wheat")) r=messages[currentLang].wheat;
+      else if(msg.includes("धान")||msg.includes("rice")) r=messages[currentLang].rice;
+      else if(msg.includes("खाद")||msg.includes("fertilizer")) r=messages[currentLang].fertilizer;
+      else if(msg.includes("मौसम")||msg.includes("weather")) r=messages[currentLang].weather;
+      return r;
+    }
+
+    function handleChat(text=""){
+      userMessage=text||chatInput.value.trim();
+      if(!userMessage)return;
+      chatbox.appendChild(createChatLi(userMessage,"outgoing"));
+      chatInput.value="";chatbox.scrollTop=chatbox.scrollHeight;
+
+      setTimeout(()=>{
+        chatbox.appendChild(createChatLi(generateResponse(userMessage),"incoming"));
+        chatbox.scrollTop=chatbox.scrollHeight;
+      },600);
+    }
+
+    sendBtn.onclick=()=>handleChat();
+    chatInput.addEventListener("keydown",e=>{
+      if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleChat();}
+    });
+  </script>
+</body>
+</html>
